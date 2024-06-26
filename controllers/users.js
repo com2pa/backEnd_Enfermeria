@@ -1,9 +1,16 @@
 const { request, response } = require("../app");
 
-const usersRouter = requiere('express').Router();
+const usersRouter = require('express').Router();
 
-usersRouter.pos('/',(request,response)=>{
-    
-})
+usersRouter.post('/', async(request,response)=>{
+   const {name,
+    email,        
+    phone,        
+    password,} =request.body;
+    // console.log(name,
+    //     email,        
+    //     phone,        
+    //     password);
+});
 
 module.exports = usersRouter;
