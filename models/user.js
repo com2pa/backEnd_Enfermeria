@@ -2,55 +2,41 @@ const mongoose= require('mongoose');
 
 // modelo las base datos
 // documents 
-const userShema =new mongoose.Schema({
-    nombre:{
-        type:String,
-        required:true
-    },    
-    edad:Number,
-    telefono:{
-        type:Number,
-        required:true
-    },
-    correo:{
-        type:String,
-        required:true
-    },
-    contraseña:{
-        type:String,
-        required:true
-    },
+const userSchema =new mongoose.Schema({
+    name: String,    
+    edad: Number,
+    phone: Number,        
+    email:String,        
+    password:String,        
     role:{
         type:String,
         default:'USER_ROLE'
-    },
-    img:{
-        type:String,
-        default:"default.png"
-    },
+    },    
     fecha:{
         type:Date,
-        default:Date.now
-    },
-    
+        default:Date.now,
+    },    
     verificacion:{
         type:Boolean,
         default:false
-    }
-    
+    },
+    Services:[{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Service',
+    }]
 })
 
 // funcion para transformar datos cuando se solicite 
 // returnedObject= lo que estoy solicitendo
-userShema.set('toJSON',{
+userSchema.set('toJSON',{
     transform: (document, returnedObject)=>{
         returnedObject.id = returnedObject._id.toString();
         delete returnedObject._id;
         delete returnedObject.__v;
-        delete returnedObject.contraseña; 
+        delete returnedObject.password; 
     }
 })
 
-const User = mongoose.model('User',userShema);   
+const User = mongoose.model('User',userSchema);   
 
-module.exports = userShema;
+module.exports = User;
