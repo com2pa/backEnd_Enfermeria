@@ -7,11 +7,11 @@ loginRouter.post('/', async(request,response)=>{
    
     // verificando si el usuario existe
    const userExist = await User.findOne({email}) // .exec()
-    // console.log(userExist);
+    console.log(userExist);
     if(!userExist){
         return response.status(400).json({error:'email o contraseña invalida por favor revisar!'})
     }
-    
+        
     // // si el usuario esta verificado
     if(!userExist.verificacion){
         return response.status(400).json({error:'Tu! email no ha sido verificado por favor revisar!'})
@@ -24,13 +24,17 @@ loginRouter.post('/', async(request,response)=>{
         return response.status(400).json({error:'email o contraseña invalida por favor revisar!'})
     }
     // creando el token
+    // saber el id  y el nombre de quien inicio session
     const userForToken = {
         id: userExist.id,
-        // name: userExist.name,
+        name: userExist.name,
         // role: userExist.role,
         // email: userExist.email,
         // verificacion: userExist.verificacion
     }
+    console.log(userForToken)
+
+    // el token dura 1 un dia!
     // recomienta para cada pagina tener una contraseña encriptada
     // cuanto tiempo quiere que se quede inicia la sesion 1dia eso dependera de que se quiera
     const accesstoken = jwt.sign(userForToken, process.env.ACCESS_TOKEN_SECRET, {
@@ -51,7 +55,10 @@ loginRouter.post('/', async(request,response)=>{
     }); // 1dia
     
     
-    return response.sendStatus(200);
+    // return response.sendStatus(200);
+    return response.status(200).json({message:'Iniciando la sesion'});
+    
+
  });
  
  module.exports = loginRouter; 
