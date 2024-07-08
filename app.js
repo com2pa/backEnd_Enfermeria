@@ -3,7 +3,14 @@ const express = require('express');
 const app = express();
 const mongoose= require('mongoose');
 const usersRouter = require('./controllers/users');
+const servicesRouter = require('./controllers/service')
+const cors = require('cors')
+const cookieParse = require('cookie-parser');
+const cookieParser = require('cookie-parser');
+const loginRouter = require('./controllers/login');
+const { usertExtractor } = require('./middleware/auth');
 
+// const morgan=require('morgan')
 
 (async()=> {
    try {
@@ -13,9 +20,14 @@ const usersRouter = require('./controllers/users');
    } catch (error) {
     console.log(error);
    }
-})()
+})();
+app.use(cors())
+app.use(express.json());
+app.use(cookieParser())
+// app.use(morgan('tiny'))
 
 // rutas backEnd
-app.use('/app/users', usersRouter);
-
+app.use('/api/users',usersRouter);
+app.use('/api/login',loginRouter);
+app.use('/api/servicio',usertExtractor, servicesRouter);
 module.exports = app;
