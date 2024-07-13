@@ -6,8 +6,8 @@ loginRouter.post('/', async(request,response)=>{
     const {email, password} = request.body
    
     // verificando si el usuario existe
-   const userExist = await User.findOne({email}) // .exec()
-    console.log(userExist);
+   const userExist = await User.findOne({email}) 
+    // console.log(userExist);
     if(!userExist){
         return response.status(400).json({error:'email o contraseña invalida por favor revisar!'})
     }
@@ -28,11 +28,11 @@ loginRouter.post('/', async(request,response)=>{
     const userForToken = {
         id: userExist.id,
         name: userExist.name,
-        // role: userExist.role,
+        role: userExist.role,
         // email: userExist.email,
         // verificacion: userExist.verificacion
     }
-    console.log(userForToken)
+    console.log('incio sesion !',userForToken)
 
     // el token dura 1 un dia!
     // recomienta para cada pagina tener una contraseña encriptada
@@ -56,7 +56,7 @@ loginRouter.post('/', async(request,response)=>{
     
     
     // return response.sendStatus(200);
-    return response.status(200).json({message:'Iniciando la sesion'});
+    return response.status(200).json(userForToken);
     
 
  });
