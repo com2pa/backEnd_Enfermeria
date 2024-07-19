@@ -2,9 +2,9 @@ const mongoose= require('mongoose');
 
 // modelo las base datos
 // documents 
-const serviceSchema =new mongoose.Schema({
+const serviceSchema = new mongoose.Schema({
     NameService:String,
-    users:{
+    user:{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
     }
