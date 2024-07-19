@@ -1,5 +1,4 @@
 const mongoose= require('mongoose');
-
 // modelo las base datos
 // documents 
 const userSchema =new mongoose.Schema({

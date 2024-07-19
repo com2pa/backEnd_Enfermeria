@@ -12,10 +12,7 @@ const usertExtractor = async(request, response, next)=>{
  
 
     // verificar que el token es válido
-    // jwt.verify(Token, process.env.ACCESS_TOKEN_SECRET, (err, decodedToken) => {
-    //     if(err) return response.status(401).json({error: 'No estas autorizado para acceder a esta ruta'})
-    //     request.userId = decodedToken.id;
-    // });
+    
     const decoded = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
     // console.log(decoded)
 
