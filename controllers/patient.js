@@ -19,7 +19,14 @@ patientRouter.post('/', async(request,response)=>{
      if(!name || !email || !phone  || !address || !age || !description || !date){
          return response.status(400).json({error:'Todos los campon son requerido'})
      }
-     
+     const patientExist = await Patient.findOne({email,name})
+     if(patientExist){
+         return response.status(400).json(
+            {
+            error:'El email y nombre ya se encuentra en uso, espera nuestra respuesta !'
+        }
+    )
+     }
      // return response.sendStatus(200);
  
  
