@@ -1,8 +1,9 @@
-const servicesRouter = require('express').Router()
-const { request, response } = require('express')
-const User = require('../models/user')
-const Service = require('../models/service')
-const jwt = require('jsonwebtoken')
+const servicesRouter = require('express').Router();
+const User = require('../models/user');
+const Service = require('../models/service');
+// const jwt = require('jsonwebtoken');
+const Patient = require('../models/patient');
+const { usertExtractor } = require('../middleware/auth');
 
 // obtener todos los servicios de ese usuario
  servicesRouter.get('/', async (request,response)=>{
@@ -10,40 +11,45 @@ const jwt = require('jsonwebtoken')
     const user = request.user;
     // nos muestra todas las servicio de esa persona
     const services = await Service.find({});
-     return response.status(200).json(services)
      
+    return response.status(200).json(services)
 });
 
 // ----------------------------------crear un nuevo servicio
- servicesRouter.post('/', async (request,response)=>{
+ servicesRouter.post('/', usertExtractor ,async (request,response)=>{
 //   //  busco el usuario
   const user = request.user;
+  
 
   if (user.role !== 'admin') {
     return response.status(403).json('No estas autorizado para esta funcion');
   }
 //   //  lo que envia el usuario en el front end
   const {NameService} = request.body
-  console.log(NameService)
+  console.log('esteee',NameService)
 
 //   // creo un nuevo servicio o categoria
 //                           // uso el modelo creado service (la tabla de base de datos)
   const newServicio = new Service({
     NameService,
     user: user._id,
+   
+    
+    
+    
   })
 // //   // lo guardo este esta variable lo que cree
    const savedService = await newServicio.save();
 
-//   // agregando servicio creo al usuario
+ // agregando servicio creo al usuario
   user.Services = user.Services.concat(savedService.id);
   await user.save();
-
-//   // luego lo devuelvo
+  
+  // luego lo devuelvo
     return response.status(201).json(savedService);
 });
 //-------------------------------------- editar 
-servicesRouter.put('/:id' ,async(request, response)=>{
+servicesRouter.put('/:id' ,usertExtractor ,async(request, response)=>{
   //   //  busco el usuario
   const user = request.user;
   if (user.role!== 'admin') {
@@ -87,7 +93,7 @@ servicesRouter.put('/:id' ,async(request, response)=>{
    
 });
 // -----------------------------------eliminar
-servicesRouter.delete('/:id', async (request,response)=>{
+servicesRouter.delete('/:id',usertExtractor, async (request,response)=>{
   //   //  busco el usuario
     const user = request.user;
     if (user.role !== 'admin') {
