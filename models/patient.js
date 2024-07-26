@@ -13,10 +13,10 @@ const patientSchema = new mongoose.Schema({
         type: Date,
         default: Date.now,
     }],
-    Services: [{ 
+    services: { 
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Service',
-    }],
+    },
     doctor:[{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
