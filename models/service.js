@@ -11,7 +11,11 @@ const serviceSchema = new mongoose.Schema({
     patient:{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Patient',
-    }
+    },
+    nurse:[{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Nurse',
+    }]
     
 })
 
