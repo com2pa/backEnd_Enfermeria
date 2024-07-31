@@ -12,6 +12,7 @@ const { usertExtractor } = require('./middleware/auth');
 const logoutRouter = require('./controllers/logout');
 const patientRouter = require('./controllers/patient');
 const nurseRouter = require('./controllers/nurse');
+const appointmentRouter = require('./controllers/appointment');
 
 
 // const morgan=require('morgan')
@@ -37,9 +38,12 @@ app.use('/api/logout', logoutRouter);
 app.use('/api/refres', usertExtractor, refresRouter)
 app.use('/api/servicio', servicesRouter);
 app.use('/api/nurse', usertExtractor, nurseRouter);
+app.use('/api/cita',usertExtractor, appointmentRouter);
 
 // paciente
 app.use('/api/patient', patientRouter);
+// cita
+
 
 
 module.exports = app;
