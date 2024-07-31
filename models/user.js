@@ -9,8 +9,10 @@ const userSchema =new mongoose.Schema({
     password:String,        
     role:{
         type:String,
-        default:'USER_ROLE'
-    },    
+        default:'enfermero'
+    },
+    // role: String,  // cambio a string para que pueda ser user o admin
+
     fecha:{
         type:Date,
         default:Date.now,
