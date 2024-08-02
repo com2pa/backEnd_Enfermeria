@@ -6,6 +6,7 @@ const Service = require('../models/service')
 // correo envio
 const nodemailer = require("nodemailer");
 const { PAGE_URL } = require('../config');
+const { usertExtractor } = require("../middleware/auth");
 
 
 patientRouter.get('/',async(request,response)=>{
@@ -33,6 +34,7 @@ patientRouter.post('/', async(request,response)=>{
         age,
         description,
         serviceSelected,
+        time,
         date} =request.body;
 
         console.log(request.body);
@@ -40,7 +42,7 @@ patientRouter.post('/', async(request,response)=>{
 
 
      // verificando que todos existen 
-     if(!name || !email || !phone  || !address || !age || !description || !date || !serviceSelected){
+     if(!name || !email || !phone  || !address || !age || !description || !date || !serviceSelected || !time){
          return response.status(400).json({error:'Todos los campon son requerido'})
      }
     //  verificar si el paciente ya esta registrado con el nombre y email
@@ -52,51 +54,101 @@ patientRouter.post('/', async(request,response)=>{
         }
     )
      }
-     
-     // creando nuevo usuario en la base de datos
-     const newPatient = new Patient({
-        name,
-        email,
-        phone,
-        address,
-        age,
-        description,
-        date,
-        services: serviceSelected,
-     })
-    
+    // comparamos time si ya existe el mismo dia 
 
-    // guardando usuario registrado 
-     const savedPatient = await newPatient.save();
-     console.log('Paciente',savedPatient);
- 
- 
- 
+     const existeCita = await Patient.findOne({
+        
+        services: serviceSelected,
+        time,
+     });
+     if(existeCita){
+         return response.status(400).json({error:'Ya hay una cita para este paciente en este horario, ingrese otra otra para verificar si esta disponible , sino ingrese otro dia  '})
+     }else{
+          // creando nuevo usuario en la base de datos
+        const newPatient = new Patient({
+            name,
+            email,
+            phone,
+            address,
+            age,
+            description,
+            date,
+            services: serviceSelected,
+            time,
+        })
+        // guardando usuario registrado 
+        const savedPatient = await newPatient.save();
+        console.log('Paciente',savedPatient);
+        
      // enviar correo para verificacion de usuaruio registrado
      const transporter = nodemailer.createTransport({
-         host: 'smtp.gmail.com',
-         port: 465,
-         secure: true, // Use `true` for port 465, `false` for all other ports
-         auth: {
-           user: process.env.EMAIL_USER,
-           pass: process.env.EMAIL_PASS,
-         },
-     });
- 
- //     //  como enviar el correo
-            await transporter.sendMail({
-           from: process.env.EMAIL_USER, // sender address
-           to: [email, process.env.EMAIL_USER],
-           subject: "Solicitud de cita  ✔", // Subject line
-           text: "Acontinuacion se presenta cita ", 
-           html: `<p> cita: </p> <pre>${JSON.stringify(savedPatient, null, 2)}</pre> `, 
-         });
-       
- 
+        host: 'smtp.gmail.com',
+        port: 465,
+        secure: true, // Use `true` for port 465, `false` for all other ports
+        auth: {
+          user: process.env.EMAIL_USER,
+          pass: process.env.EMAIL_PASS,
+        },
+    });
+
+//     //  como enviar el correo
+           await transporter.sendMail({
+          from: process.env.EMAIL_USER, // sender address
+          to: [email, process.env.EMAIL_USER],
+          subject: "Solicitud de cita  ✔", // Subject line
+          text: "Acontinuacion se presenta cita ", 
+          html: `<p> cita: </p> <pre>${JSON.stringify(savedPatient, null, 2)}</pre> `, 
+        });
+      
+
+   
     
+    return response.status(201).json(' Mensaje Enviado ! se respondera a la brevedad !');
+   //  return response.status(200).json({patient:savedPatient, services:allServices})
+
+     }
+
+
+
      
-     return response.status(201).json(' Mensaje Enviado ! se respondera a la brevedad !');
-    //  return response.status(200).json({patient:savedPatient, services:allServices})     
+   
+    
+    
+
+
+
+
+    
+ 
+ 
+      
 });
-        
+//eliminar
+
+patientRouter.delete('/:id',  async(request, response)=>{
+    // busco al usuario
+    // const user = request.user;
+    // if (user.role!== 'admin') {
+    //     return response.sendStatus(401);
+    // }
+    // busco al paciente
+    const patient = await Patient.findByIdAndDelete(request.params.id);
+    if(!patient){
+        return response.status(404).json({error:'El paciente no existe'})
+    }
+    console.log('se elimino la cita ', patient)
+    return response.status(200).json('El paciente ha sido eliminado')
+}); 
+// actualizar el status
+
+patientRouter.patch('/:id',  async(request, response)=>{
+    // busco al paciente
+    const patient = await Patient.findByIdAndUpdate(request.params.id, {status: request.body.status}, {new: true});
+    if(!patient){
+        return response.status(404).json({error:'El paciente no existe'})
+    }
+    console.log('actualizado el status ', patient)
+
+    return response.status(200).json('El status del paciente ha sido actualizado')
+});
  module.exports = patientRouter;
