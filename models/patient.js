@@ -9,18 +9,24 @@ const patientSchema = new mongoose.Schema({
     address: String,
     age: Number,
     description: String,
+    time:String,
     date: [{
         type: Date,
         default: Date.now,
+    }],    
+    status:[{
+        type:String,
+        enu:['espera', 'finalizado'],
     }],
     services: { 
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Service',
     },
-    doctor:[{
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'User',
+    status:[{
+        type: String,
+        default: 'Pendiente',
     }]
+    
     
     
 })
