@@ -4,10 +4,10 @@ const mongoose = require('mongoose');
 // document
 const nurseSchema = new mongoose.Schema({
     name: String,
-    service:{
+    services:[{
         type: mongoose.Schema.Types.ObjectId,
         ref:'Service'
-    }
+    }]
         
 })
 
