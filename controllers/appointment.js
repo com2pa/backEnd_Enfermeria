@@ -36,5 +36,18 @@ appointmentRouter.get('/', async (request, response) => {
     
 
 });
+// eliminar una cita
+
+appointmentRouter.delete('/:id', async (request, response) => {
+    const user = require.user;
+    if(user.role!== 'admin' ){
+        return response.status(403).json('No estas autorizado para esta función');
+    }
+    // busco la cita
+    const appointment = await appointment.findByIdAndDelete(request.params.id)
+    console.log('Cita eliminada: ', appointment)
+    return response.status(200).json('Cita eliminada')
+});
+
 
 module.exports = appointmentRouter;
