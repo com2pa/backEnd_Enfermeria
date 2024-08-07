@@ -1,13 +1,14 @@
 const appointmentRouter = require('express').Router()
 const mongoose = require('mongoose')
-const Patient = require('../models/patient')
-
+const Patient = require('../models/patient');
+const { usertExtractor } = require('../middleware/auth');
+const Appointment =require('../models/appointment')
 
 appointmentRouter.get('/', async (request, response) => {
     const user =require.user;
-    if(user.role !== 'admin' ){
-        return response.status(403).json('No estas autorizado para esta función');
-    }
+    // if(user.role !== 'admin' ){
+    //     return response.status(403).json('No estas autorizado para esta función');
+    // }
     // muestro todos los pacientes
     const patients = await Patient.find({})
     console.log('Pacientes: ', patients)
@@ -24,7 +25,8 @@ appointmentRouter.get('/', async (request, response) => {
         patient: request.body.patientId,
         // service: request.body.serviceId,
         // nurse: request.body.nurseId,
-        // date: request.body.date,
+        date: request.body.date,
+        time:request.body.time,
         
     })
 
@@ -38,7 +40,7 @@ appointmentRouter.get('/', async (request, response) => {
 });
 // eliminar una cita
 
-appointmentRouter.delete('/:id', async (request, response) => {
+appointmentRouter.delete('/:id',usertExtractor, async(request, response) => {
     const user = require.user;
     if(user.role!== 'admin' ){
         return response.status(403).json('No estas autorizado para esta función');
