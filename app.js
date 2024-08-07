@@ -38,7 +38,7 @@ app.use('/api/logout', logoutRouter);
 app.use('/api/refres', usertExtractor, refresRouter)
 app.use('/api/servicio', servicesRouter);
 app.use('/api/nurse', usertExtractor, nurseRouter);
-app.use('/api/cita',usertExtractor, appointmentRouter);
+app.use('/api/cita', appointmentRouter);
 
 // paciente
 app.use('/api/patient', patientRouter);
