@@ -1,5 +1,5 @@
 const PAGE_URL = process.env.NODE_ENV === 'production'
-    ? 'https://backend-enfermeria.onrender.com/'
+    ? 'https://backend-enfermeria.onrender.com'
     : 'http://localhost:5173';
 
     const MONGO_URL = process.env.NODE_ENV === 'production'
