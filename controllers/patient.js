@@ -13,15 +13,12 @@ patientRouter.get('/',async(request,response)=>{
     // verifico el rol 
    
         // obtengo todo los pacientes
-        const patients = await Patient.find({})
+        const patients = await Patient.find({}).populate('services', 'NameService')
         // console.log('todos los pacientes ',patients)
         
         // enviar al front los pacientes
         // response.status(200).json({patients})
-        return response.status(200).json(patients)
-    
-
-   
+        return response.status(200).json(patients)  
 
 })
 patientRouter.post('/', async(request,response)=>{
@@ -36,7 +33,6 @@ patientRouter.post('/', async(request,response)=>{
         serviceSelected,
         time,
         date} =request.body;
-
         console.log(request.body);
 
 
@@ -97,31 +93,22 @@ patientRouter.post('/', async(request,response)=>{
           to: [email, process.env.EMAIL_USER],
           subject: "Solicitud de cita  ✔", // Subject line
           text: "Acontinuacion se presenta cita ", 
-          html: `<p> cita: </p> <pre>${JSON.stringify(savedPatient, null, 2)}</pre> `, 
+        //   html: `<p> cita: </p> <pre>${JSON.stringify(savedPatient, null, 2)}</pre> `, 
+            html: `<p> cita: </p> 
+                <ul>
+                    <li>Nombre: ${savedPatient.name}</li>
+                    <li>Email: ${savedPatient.email}</li>
+                    <li>Teléfono: ${savedPatient.phone}</li>
+                    <li>Fecha: ${savedPatient.date}</li>
+                    <li>Hora: ${savedPatient.time}</li>
+                </ul>`, 
         });
-      
-
-   
-    
+          
     return response.status(201).json(' Mensaje Enviado ! se respondera a la brevedad !');
-   //  return response.status(200).json({patient:savedPatient, services:allServices})
+   
 
      }
-
-
-
-     
    
-    
-    
-
-
-
-
-    
- 
- 
-      
 });
 //eliminar
 
@@ -148,6 +135,50 @@ patientRouter.patch('/:id',  async(request, response)=>{
         return response.status(404).json({error:'El paciente no existe'})
     }
     console.log('actualizado el status ', patient)
+
+    // verifico si el paciente esta status espera
+    if(patient.status == "espera"){
+        // enviar correo para verificacion de usuaruio registrado
+        const transporter = nodemailer.createTransport({
+           host: 'smtp.gmail.com',
+           port: 465,
+           secure: true, // Use `true` for port 465, `false` for all other ports
+           auth: {
+             user: process.env.EMAIL_USER,
+             pass: process.env.EMAIL_PASS,
+           },
+       });   
+           //  como enviar el correo
+              await transporter.sendMail({
+             from: process.env.EMAIL_USER, // sender address
+             to: [patient.email, process.env.EMAIL_USER],
+             subject: "Solicitud de cita  ✔", // Subject line
+             text: "Acontinuacion se presenta cita ", 
+             html: `<p> Su cita esta en al modalidad de espera</p>`, 
+           });         
+
+    }else if(patient.status == 'finalizado'){
+        // enviar correo para verificacion de usuaruio registrado
+        const transporter = nodemailer.createTransport({
+            host: 'smtp.gmail.com',
+            port: 465,
+            secure: true, // Use `true` for port 465, `false` for all other ports
+            auth: {
+                user: process.env.EMAIL_USER,
+                pass: process.env.EMAIL_PASS,
+            },
+        });
+
+    //     //  como enviar el correo
+      await transporter.sendMail({
+        from: process.env.EMAIL_USER, // sender address
+        to: [patient.email, process.env.EMAIL_USER],
+        subject: "Solicitud de cita  ✔", // Subject line
+        text: "Acontinuacion se presenta cita ",     
+        html: ` <p> su cita a finalizado </p>`, 
+    });
+    }
+    
 
     return response.status(200).json('El status del paciente ha sido actualizado')
 });
